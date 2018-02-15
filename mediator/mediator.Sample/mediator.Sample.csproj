@@ -54,9 +54,9 @@
     <Compile Include="Application.cs" />
     <Compile Include="AutofacHandlerProvider.cs" />
     <Compile Include="DumbHandlerProvider.cs" />
-    <Compile Include="HelloWorldQueryHandler.cs" />
-    <Compile Include="HelloWorldQuery.cs" />
-    <Compile Include="HelloWorldResponse.cs" />
+    <Compile Include="Common\HelloWorldQueryHandler.cs" />
+    <Compile Include="Common\HelloWorldQuery.cs" />
+    <Compile Include="Common\HelloWorldResponse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
