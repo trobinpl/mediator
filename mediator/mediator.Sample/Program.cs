@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,20 +10,31 @@ namespace mediator.Sample
 {
     class Program
     {
+        private static IContainer Container { get; set; }
+
         static void Main(string[] args)
         {
-            IHandlerProvider dumbHandlerProvider = new DumbHandlerProvider();
-            Mediator mediator = new Mediator(dumbHandlerProvider);
+            var builder = new ContainerBuilder();
 
-            HelloWorldQuery query = new HelloWorldQuery()
-            {
-                Language = HelloWorldQuery.SupportedLanguage.EN,
-            };
+            builder.RegisterType<Mediator>()
+                .As<IMediator>()
+                .InstancePerLifetimeScope();
 
-            HelloWorldResponse response = mediator.Dispatch<HelloWorldQuery, HelloWorldResponse>(query);
+            builder.RegisterType<AutofacHandlerProvider>()
+                .As<IHandlerProvider>()
+                .InstancePerLifetimeScope();
 
-            Console.WriteLine(response.HelloWorldText);
-            Console.ReadLine();
+            // Scan an assembly for components
+            builder.RegisterAssemblyTypes(Assembly.Load("mediator.Sample")).AsClosedTypesOf(typeof(IQueryHandler<,>));
+
+            builder.RegisterAssemblyTypes(Assembly.Load("mediator.Sample"))
+                .Where(t => t.BaseType == typeof(IQuery<>))
+                .AsImplementedInterfaces();
+
+            Container = builder.Build();
+
+            Application app = new Application(Container.Resolve<IMediator>());
+            app.Run();
         }
     }
 }
